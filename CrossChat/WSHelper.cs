@@ -10,7 +10,6 @@ namespace CrossChat
 {
     public class ChatMessage
     {
-        public uint Id { get; set; }
         public int Context { get; set; }
         public string Content { get; set; }
     }
@@ -69,7 +68,7 @@ namespace CrossChat
             _webSocket = new ClientWebSocket();
             _receiveCts = new CancellationTokenSource();
             
-            Uri serverUri = new($"ws://localhost:1768/ws?name={Uri.EscapeDataString(username)}");
+            Uri serverUri = new($"wss://ss.bobisbilly.com/ws?name={Uri.EscapeDataString(username)}");
 
             try
             {
@@ -99,14 +98,14 @@ namespace CrossChat
                     var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
 
                     using JsonDocument doc = JsonDocument.Parse(message);
-                    string user = doc.RootElement.GetProperty("Username").GetString() ?? "Unknown";
-                    string content = doc.RootElement.GetProperty("Content").GetString() ?? "";
+                    string Username = doc.RootElement.GetProperty("Username").GetString() ?? "Unknown";
+                    string Content = doc.RootElement.GetProperty("Content").GetString() ?? "";
 
                     _mainThreadQueue.Enqueue(() =>
                     {
                         if (ChatManager.Instance)
                         {
-                            ChatManager.Instance.ReceiveChatMessage(0, user, content, true);
+                            ChatManager.Instance.ReceiveChatMessage(0, Username, Content, true);
                         }
                     });
                 }
